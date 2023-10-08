@@ -1,90 +1,71 @@
-module modCartesiano2D
-implicit none
+module Cartesian2DModule
+  implicit none
 
-type::coord2D
-
-real::x,y
-
-end type coord2D
+  type :: Point2D
+    real :: x, y
+  end type Point2D
 
 contains
 
-real function calcDistancia(pA_,pB_)
-!use modCartesiano2D
-implicit none
-real:: x, y
-type(Coord2D)::pA_, pB_
+  real function calculateDistance(pointA, pointB)
+    implicit none
+    type(Point2D) :: pointA, pointB
+    calculateDistance = sqrt((pointA%x - pointB%x)**2 + (pointA%y - pointB%y)**2)
+  end function calculateDistance
 
-x = pA_%x
-y = pB_%y
+  subroutine assignValues(p, x_val, y_val)
+    implicit none
+    type(Point2D), intent(inout) :: p
+    real, intent(in) :: x_val, y_val
+    p%x = x_val
+    p%y = y_val
+  end subroutine assignValues
 
-calcDistancia = sqrt((pA_%x - pB_%x)**2 + (pA_%y - pB_%y)**2)
+  subroutine displayContent(R)
+    implicit none
+    type(Point2D), intent(in) :: R
+    print*, R%x, R%y
+  end subroutine displayContent
 
-end function
+  subroutine translatePoint(P, x_offset, y_offset)
+    implicit none
+    type(Point2D), intent(inout) :: P
+    real, intent(in) :: x_offset, y_offset
+    P%x = P%x + x_offset
+    P%y = P%y + y_offset
+  end subroutine translatePoint
 
-subroutine atribuirConteudo(pA_, x_, y_)
-!use modCartesiano2D
-implicit none
-real::x_, y_
-type(Coord2D)::pA_
+end module Cartesian2DModule
 
-pA_%x  = x_
-pA_%y  = y_
+program DerivedTypeExperiment
+  use Cartesian2DModule
+  implicit none
+  type(Point2D) :: origin, pointA, pointB
+  real :: distAB, distBA
 
-end subroutine
+  origin = Point2D(0.0, 0.0)
+  call assignValues(pointA, 3.0, 3.0)
 
-subroutine mostrarConteudo(R_)
-!use modCartesiano2D
-implicit none
+  print*, "Origin coordinates"
+  call displayContent(origin)
 
-type(Coord2D)::R_
+  print*, "Coordinates of point A"
+  call displayContent(pointA)
 
-print*, R_
+  pointB = pointA
 
-end subroutine
+  print*, "Coordinates of point B"
+  call displayContent(pointB)
 
-subroutine transladar(P_,x_,y_)
-!use modCartesiano2D
-implicit none
-real::x_, y_
-type(Coord2D)::P_
+  call translatePoint(pointB, 3.0, 4.0)
 
-P_%x = (p_%x + x_)
-P_%y = (p_%y + y_)
+  print*, "Coordinates of translated point B"
+  call displayContent(pointB)
 
-end subroutine
+  distAB = calculateDistance(pointA, pointB)
+  print*, "Distance between A and B =", distAB
 
-end module
+  distBA = calculateDistance(pointB, pointA)
+  print*, "Distance between B and A =", distBA
 
-program expTipoDerivado
-use modCartesiano2D
-implicit none
-type(Coord2D) :: origem, pA, pB !3 variaveis do novo tipo 
-!real :: dAB, dBA, calcDistancia
-real :: dAB
-real :: dBA
-
-	origem%x= 0.0; origem%y=0.0
- call atribuirConteudo (pA, 3.0, 3.0); 
-
- print*, " Coordenadas da origem "
- call mostrarConteudo (origem);
-
- print*, " Coordenadas do ponto A "
- call mostrarConteudo (pA);     
- pB = pA;
-
- print*, " Coordenadas do ponto B "
- call mostrarConteudo (pB);
- call transladar      (pB,3.0,4.0);
-
- print*, " Coordenadas do ponto B transladado "
- call mostrarConteudo (pB)
-
- dAB = calcDistancia(pA,pB)
- print*, " distancia entre A e B =", dAB
-
- dBA = calcDistancia(pB,pA)
- print*, " distancia entre B e A =", dBA
-
-end program expTipoDerivado
+end program DerivedTypeExperiment
