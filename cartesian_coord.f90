@@ -35,13 +35,21 @@ contains
     P%y = P%y + y_offset
   end subroutine translatePoint
 
+  real function angleWithXAxis(p) result(theta)
+    implicit none
+    type(Point2D), intent(in) :: p
+    real :: theta
+
+    theta = atan2(p%y, p%x)
+  end function angleWithXAxis
+
 end module Cartesian2DModule
 
 program DerivedTypeExperiment
   use Cartesian2DModule
   implicit none
   type(Point2D) :: origin, pointA, pointB
-  real :: distAB, distBA
+  real :: distAB, distBA, angleA, angleB
 
   origin = Point2D(0.0, 0.0)
   call assignValues(pointA, 3.0, 3.0)
@@ -67,5 +75,11 @@ program DerivedTypeExperiment
 
   distBA = calculateDistance(pointB, pointA)
   print*, "Distance between B and A =", distBA
+
+  angleA = angleWithXAxis(pointA)
+  print*, "Angle of point A with x-axis =", angleA
+
+  angleB = angleWithXAxis(pointB)
+  print*, "Angle of point B with x-axis =", angleB
 
 end program DerivedTypeExperiment
